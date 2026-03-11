@@ -1,6 +1,8 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager
+from kivy.config import Config
 
 from app.screens.stat_screen import StatScreen
 from app.screens.inventory_screen import InventoryScreen
@@ -8,22 +10,27 @@ from app.screens.data_screen import DataScreen
 from app.screens.map_screen import MapScreen
 from app.screens.radio_screen import RadioScreen
 
-from kivy.config import Config
+from app.widgets.navbar import NavBar
+from app.widgets.ctr_overlay import CRTOverlay
+
 
 Config.set("graphics", "width", "900")
 Config.set("graphics", "height", "500")
 Config.set("graphics", "resizable", "0")
-
-from app.widgets.navbar import NavBar
 
 
 class PipBoyApp(App):
 
     def build(self):
 
-        root = BoxLayout(orientation="vertical")
+        # ROOT (allows overlay layering)
+        root = FloatLayout()
 
-        screen_manager = ScreenManager()
+        # MAIN UI LAYOUT
+        main_layout = BoxLayout(orientation="vertical", size_hint=(1, 1))
+
+        # SCREEN MANAGER
+        screen_manager = ScreenManager(size_hint=(1, 1))
 
         screen_manager.add_widget(StatScreen(name="stat"))
         screen_manager.add_widget(InventoryScreen(name="inv"))
@@ -31,10 +38,21 @@ class PipBoyApp(App):
         screen_manager.add_widget(MapScreen(name="map"))
         screen_manager.add_widget(RadioScreen(name="radio"))
 
+        # NAVBAR
         navbar = NavBar(screen_manager)
+        navbar.size_hint_y = None
+        navbar.height = 60
 
-        root.add_widget(navbar)
-        root.add_widget(screen_manager)
+        # BUILD MAIN LAYOUT
+        main_layout.add_widget(navbar)
+        main_layout.add_widget(screen_manager)
+
+        # ADD MAIN LAYOUT TO ROOT
+        root.add_widget(main_layout)
+
+        # CRT OVERLAY (on top of everything)
+        overlay = CRTOverlay(size_hint=(1, 1))
+        root.add_widget(overlay)
 
         return root
 

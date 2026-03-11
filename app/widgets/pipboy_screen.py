@@ -1,44 +1,39 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
+
 from app.core.theme import theme
 
 
 class PipBoyScreen(BoxLayout):
 
-    def __init__(self, title="SCREEN", **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, title="", **kwargs):
+        super().__init__(orientation="vertical", **kwargs)
 
-        self.orientation = "vertical"
+        # IMPORTANT: this makes the widget fill the entire Screen
+        self.size_hint = (1, 1)
 
-        self.header = self.build_header(title)
-        self.content = BoxLayout()
-        self.footer = self.build_footer()
-
+        # HEADER
+        self.header = Label(
+            text=title,
+            size_hint_y=None,
+            height=50,
+            font_name=theme.font,
+            font_size=24,
+            color=theme.text,
+        )
         self.add_widget(self.header)
+
+        # CONTENT AREA (all screens inject their layout here)
+        self.content = BoxLayout(orientation="vertical", size_hint_y=1)
         self.add_widget(self.content)
-        self.add_widget(self.footer)
 
-    def build_header(self, title):
-
-        header = BoxLayout(size_hint_y=0.15)
-
-        label = Label(text=title, font_name=theme.font, font_size=32, color=theme.text)
-
-        header.add_widget(label)
-
-        return header
-
-    def build_footer(self):
-
-        footer = BoxLayout(size_hint_y=0.1)
-
-        label = Label(
+        # FOOTER
+        self.footer = Label(
             text="PIP-BOY 3000 MK IV",
+            size_hint_y=None,
+            height=40,
             font_name=theme.font,
             font_size=16,
             color=theme.text,
         )
-
-        footer.add_widget(label)
-
-        return footer
+        self.add_widget(self.footer)
