@@ -14,5 +14,13 @@
     "Git",
     "Docker",
     "Linux"
+  ],
+  "items": [
+    "water 250 ml",
+    "water 500 ml",
+    "water 1000 ml",
+    "Food 300 Kcal",
+    "Gym 40 min",
+    "Walkedy 1h"
   ]
 }

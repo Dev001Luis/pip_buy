@@ -23,7 +23,13 @@ class InventoryScreen(Screen):
 
         # Segmented tabs at the top
         tabs = SegmentedTabs(
-            tabs=["LANGUAGES", "FRAMEWORKS", "SOFTWARES"], callback=self.switch_tab
+            tabs=[
+                "ITEMS",
+                "LANGUAGES",
+                "FRAMEWORKS",
+                "SOFTWARES",
+            ],
+            callback=self.switch_tab,
         )
         tabs.size_hint_y = None
         tabs.height = 50  # fixed height for tabs
@@ -49,6 +55,7 @@ class InventoryScreen(Screen):
         self.display_layout.clear_widgets()
 
         mapping = {
+            "ITEMS": "items",
             "LANGUAGES": "languages",
             "FRAMEWORKS": "frameworks",
             "SOFTWARES": "softwares",
