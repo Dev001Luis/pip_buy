@@ -9,7 +9,7 @@ class NavBar(BoxLayout):
         super().__init__(**kwargs)
 
         self.orientation = "horizontal"
-        self.size_hint_y = 0.1
+        self.size_hint_y = 0.12
 
         self.screen_manager = screen_manager
 
@@ -30,8 +30,9 @@ class NavBar(BoxLayout):
             btn = Button(
                 text=text,
                 font_name=theme.font,
-                font_size=20,
+                font_size=22,
                 background_normal="",
+                background_down="",
                 background_color=(0, 0, 0, 1),
                 color=theme.text,
             )
