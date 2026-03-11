@@ -1,10 +1,12 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
 
 from app.widgets.pipboy_screen import PipBoyScreen
 from app.widgets.segmented_tabs import SegmentedTabs
-from app.core.theme import theme
+from app.widgets.stat_bar import StatBar
+
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.gridlayout import GridLayout
 
 
 class StatScreen(Screen):
@@ -14,7 +16,7 @@ class StatScreen(Screen):
 
         layout = PipBoyScreen(title="STAT")
 
-        self.content_layout = BoxLayout(orientation="vertical", size_hint_y=1)
+        self.content_layout = BoxLayout(orientation="vertical", spacing=20, padding=20)
 
         tabs = SegmentedTabs(
             tabs=["STATUS", "SPECIAL", "PERKS"], callback=self.switch_tab
@@ -25,15 +27,19 @@ class StatScreen(Screen):
 
         self.content_layout.add_widget(tabs)
 
-        # placeholder display
-        self.display = Label(
-            text="Select a STAT category",
-            font_name=theme.font,
-            font_size=22,
-            color=theme.text,
-        )
+        # container for dynamic content
+        # self.display = BoxLayout(orientation="vertical", spacing=15)
+        scroll = ScrollView(size_hint=(1, 1))
 
-        self.content_layout.add_widget(self.display)
+        self.display = GridLayout(cols=1, spacing=15, size_hint_y=None)
+
+        self.display.bind(minimum_height=self.display.setter("height"))
+
+        scroll.add_widget(self.display)
+
+        self.content_layout.add_widget(scroll)
+
+        # self.content_layout.add_widget(self.display)
 
         layout.content.add_widget(self.content_layout)
 
@@ -41,19 +47,40 @@ class StatScreen(Screen):
 
     def switch_tab(self, tab_name):
 
+        self.display.clear_widgets()
+
         if tab_name == "STATUS":
-            self.display.text = "HP  : 100\n" "AP  : 75\n" "RAD : 10"
+
+            hp = StatBar("HP", value=90)
+            ap = StatBar("AP", value=70)
+            rad = StatBar("RAD", value=15)
+
+            self.display.add_widget(hp)
+            self.display.add_widget(ap)
+            self.display.add_widget(rad)
 
         elif tab_name == "SPECIAL":
-            self.display.text = (
-                "STR : 5\n"
-                "PER : 7\n"
-                "END : 6\n"
-                "CHA : 8\n"
-                "INT : 9\n"
-                "AGI : 6\n"
-                "LCK : 4"
-            )
+
+            stats = [
+                ("STR", 5),
+                ("PER", 7),
+                ("END", 6),
+                ("CHA", 8),
+                ("INT", 9),
+                ("AGI", 6),
+                ("LCK", 4),
+            ]
+
+            for name, value in stats:
+                self.display.add_widget(StatBar(name, value=value))
 
         elif tab_name == "PERKS":
-            self.display.text = "• Clean Code\n" "• Git Mastery\n" "• Debugger Instinct"
+
+            perks = [
+                StatBar("Clean Code", value=1, max_value=1),
+                StatBar("Debug Instnct.", value=1, max_value=1),
+                StatBar("Git Mastery", value=1, max_value=1),
+            ]
+
+            for perk in perks:
+                self.display.add_widget(perk)
