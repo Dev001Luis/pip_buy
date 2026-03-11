@@ -5,6 +5,7 @@ from kivy.uix.boxlayout import BoxLayout
 from app.widgets.pipboy_screen import PipBoyScreen
 from app.widgets.segmented_tabs import SegmentedTabs
 from app.core.theme import theme
+from app.core.inventory_manager import inventory_manager
 
 
 class InventoryScreen(Screen):
@@ -36,11 +37,16 @@ class InventoryScreen(Screen):
 
     def switch_tab(self, tab_name):
 
-        if tab_name == "LANGUAGES":
-            self.display.text = "Python\nJavaScript\nSQL"
+        mapping = {
+            "LANGUAGES": "languages",
+            "FRAMEWORKS": "frameworks",
+            "SOFTWARES": "softwares",
+        }
 
-        elif tab_name == "FRAMEWORKS":
-            self.display.text = "Flask\nFastAPI\nVue"
+        category_key = mapping.get(tab_name)
+        items = inventory_manager.get_category(category_key)
 
-        elif tab_name == "SOFTWARES":
-            self.display.text = "Git\nDocker\nLinux"
+        if items:
+            self.display.text = "\n".join(items)
+        else:
+            self.display.text = "No items yet."

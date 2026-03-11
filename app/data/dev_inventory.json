@@ -1,0 +1,18 @@
+{
+  "languages": [
+    "Python",
+    "Php",
+    "JavaScript",
+    "MySQL"
+  ],
+  "frameworks": [
+    "Flask",
+    "FastAPI",
+    "Laravel"
+  ],
+  "softwares": [
+    "Git",
+    "Docker",
+    "Linux"
+  ]
+}
