@@ -27,7 +27,14 @@ class NavBar(BoxLayout):
 
         for text, screen_name in buttons:
 
-            btn = Button(text=text, background_color=theme.primary, color=(0, 0, 0, 1))
+            btn = Button(
+                text=text,
+                font_name=theme.font,
+                font_size=20,
+                background_normal="",
+                background_color=(0, 0, 0, 1),
+                color=theme.text,
+            )
 
             btn.bind(
                 on_press=lambda instance, name=screen_name: self.switch_screen(name)
