@@ -1,28 +1,18 @@
 from kivy.uix.widget import Widget
 from kivy.graphics import Color, Rectangle
-from kivy.clock import Clock
-import random
 
 
-class CRTOverlay(Widget):
+class ScreenGlow(Widget):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.opacity_level = 0.08
-
         with self.canvas:
-            self.color = Color(0, 0, 0, self.opacity_level)
+            Color(0.1, 1.0, 0.1, 0.05)
             self.rect = Rectangle(pos=self.pos, size=self.size)
 
         self.bind(pos=self.update_rect, size=self.update_rect)
 
-        # subtle flicker
-        Clock.schedule_interval(self.flicker, 0.08)
-
     def update_rect(self, *args):
         self.rect.pos = self.pos
         self.rect.size = self.size
-
-    def flicker(self, dt):
-        self.color.a = random.uniform(0.05, 0.12)

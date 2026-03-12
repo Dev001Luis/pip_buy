@@ -13,7 +13,7 @@ class CharacterPanel(BoxLayout):
         self.padding = 20
 
         self.character = Image(
-            source="app/assets/images/vault_boy.png",
+            source="app/assets/images/vault_boy_me.png",
             allow_stretch=True,
             keep_ratio=True,
         )

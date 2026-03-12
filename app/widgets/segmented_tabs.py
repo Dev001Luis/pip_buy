@@ -2,6 +2,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from app.core.theme import theme
 
+from app.core.sound_manager import sound_manager
+
 
 class SegmentedTabs(BoxLayout):
 
@@ -33,3 +35,7 @@ class SegmentedTabs(BoxLayout):
             btn.bind(on_press=lambda instance, name=tab_name: self.callback(name))
 
             self.add_widget(btn)
+
+    def on_tab_press(self, tab_name):
+        sound_manager.play_click()
+        self.callback(tab_name)

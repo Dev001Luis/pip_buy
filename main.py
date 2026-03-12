@@ -12,6 +12,7 @@ from app.screens.radio_screen import RadioScreen
 
 from app.widgets.navbar import NavBar
 from app.widgets.ctr_overlay import CRTOverlay
+from app.widgets.screen_glow import ScreenGlow
 
 
 Config.set("graphics", "width", "900")
@@ -49,6 +50,10 @@ class PipBoyApp(App):
 
         # ADD MAIN LAYOUT TO ROOT
         root.add_widget(main_layout)
+
+        # ADD SCREEN GLOW EFFECT
+        glow = ScreenGlow()
+        root.add_widget(glow)
 
         # CRT OVERLAY (on top of everything)
         overlay = CRTOverlay(size_hint=(1, 1))
