@@ -3,6 +3,7 @@ from kivy.uix.label import Label
 from kivy.clock import Clock
 
 from app.core.theme import theme
+from app.core.sound_manager import sound_manager
 
 
 class BootScreen(Screen):
@@ -11,6 +12,7 @@ class BootScreen(Screen):
         super().__init__(**kwargs)
 
         self.boot_lines = [
+            "",
             "VAULT-TEC INDUSTRIES",
             "",
             "INITIALIZING PIP-BOY 3000 MK IV...",
@@ -39,6 +41,7 @@ class BootScreen(Screen):
         Clock.schedule_once(self.start_boot, 0.5)
 
     def start_boot(self, dt):
+        sound_manager.play_opening_beep()
         Clock.schedule_interval(self.print_line, 0.6)
 
     def print_line(self, dt):
@@ -48,6 +51,10 @@ class BootScreen(Screen):
             return False
 
         line = self.boot_lines[self.current_line]
+
+        # play terminal sound
+        if line.strip():
+            sound_manager.play_boot_line()
 
         self.label.text += line + "\n"
 
