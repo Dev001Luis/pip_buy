@@ -1,12 +1,12 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
-from app.widgets.character_panel import CharacterPanel
 
+from app.widgets.character_panel import CharacterPanel
 from app.widgets.pipboy_screen import PipBoyScreen
 from app.widgets.segmented_tabs import SegmentedTabs
-
-# from app.widgets.stat_bar import StatBar
 from app.widgets.segmented_stat_bar import SegmentedStatBar
+
+from app.core.sound_manager import sound_manager
 
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
@@ -57,9 +57,13 @@ class StatScreen(Screen):
 
         self.add_widget(layout)
 
+    def on_enter(self):
+        self.switch_tab("STATUS")
+
     def switch_tab(self, tab_name):
 
         self.display.clear_widgets()
+        sound_manager.play_click()
 
         if tab_name == "STATUS":
 
@@ -74,13 +78,13 @@ class StatScreen(Screen):
         elif tab_name == "SPECIAL":
 
             stats = [
-                ("STR", 5),
+                ("STR", 4),
                 ("PER", 7),
-                ("END", 6),
+                ("END", 3),
                 ("CHA", 8),
-                ("INT", 9),
-                ("AGI", 6),
-                ("LCK", 4),
+                ("INT", 7),
+                ("AGI", 8),
+                ("LCK", 5),
             ]
 
             for name, value in stats:

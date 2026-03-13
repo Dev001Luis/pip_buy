@@ -10,6 +10,7 @@ from app.screens.data_screen import DataScreen
 from app.screens.map_screen import MapScreen
 from app.screens.radio_screen import RadioScreen
 from app.screens.boot_screen import BootScreen
+from app.screens.countdown_screen import CountdownScreen
 
 from app.widgets.navbar import NavBar
 from app.widgets.ctr_overlay import CRTOverlay
@@ -35,6 +36,8 @@ class PipBoyApp(App):
         screen_manager = ScreenManager(size_hint=(1, 1))
 
         screen_manager.add_widget(BootScreen(name="boot"))
+        # screen_manager.add_widget(CountdownScreen(name="countdown"))
+
         screen_manager.add_widget(StatScreen(name="stat"))
         screen_manager.add_widget(InventoryScreen(name="inv"))
         screen_manager.add_widget(DataScreen(name="data"))

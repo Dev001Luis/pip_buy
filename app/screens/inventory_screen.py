@@ -6,8 +6,10 @@ from kivy.uix.button import Button
 
 from app.widgets.pipboy_screen import PipBoyScreen
 from app.widgets.segmented_tabs import SegmentedTabs
+
 from app.core.theme import theme
 from app.core.inventory_manager import inventory_manager
+from app.core.sound_manager import sound_manager
 
 
 class InventoryScreen(Screen):
@@ -53,6 +55,7 @@ class InventoryScreen(Screen):
     def switch_tab(self, tab_name):
         """Update the inventory list when a tab is pressed."""
         self.display_layout.clear_widgets()
+        sound_manager.play_click()
 
         mapping = {
             "ITEMS": "items",
@@ -96,7 +99,11 @@ class InventoryScreen(Screen):
             else:
                 btn.text = btn.text.strip("> ")
 
+    def on_enter(self):
+        self.switch_tab("ITEMS")
+
     def on_item_click(self, index):
         """Update selection when an item is clicked."""
         self.selected_index = index
         self.highlight_item(index)
+        sound_manager.play_click()
