@@ -12,6 +12,8 @@ from app.widgets.pip_boy_list import PipBoyList
 from app.core.theme import theme
 from app.core.inventory_manager import inventory_manager
 
+from pathlib import Path
+
 
 class InventoryScreen(Screen):
 
@@ -111,13 +113,16 @@ class InventoryScreen(Screen):
         }
 
         category_key = mapping.get(tab_name)
+        self.category_key = category_key
 
-        items = inventory_manager.get_category(category_key)
+        # items = inventory_manager.get_category(category_key)
+        # print(items)
+        names = inventory_manager.get_item_names(category_key)
 
-        if not items:
-            items = ["No items yet"]
+        if not names:
+            names = ["No items yet"]
 
-        inventory_list = PipBoyList(items, on_select=self.show_item)
+        inventory_list = PipBoyList(names, on_select=self.show_item)
 
         self.list_container.add_widget(inventory_list)
 
@@ -126,28 +131,24 @@ class InventoryScreen(Screen):
     # -----------------------------------
 
     def show_item(self, item_name):
+        print("Clicked:", item_name)
 
-        # Placeholder logic (can move to DB later)
+        item = inventory_manager.get_item(self.category_key, item_name)
 
-        if item_name == "No items yet":
+        if not item:
+            return
+        base_path = Path("app/assets/images/items")
 
-            self.item_image.source = "app/assets/images/items/placeholder.png"
+        image_path = base_path / item["image"]
 
-            self.item_description.text = "No items available."
+        fallback = base_path / "placeholder.png"
 
+        if image_path.exists():
+            self.item_image.source = str(image_path)
         else:
+            self.item_image.source = str(fallback)
 
-            image_path = (
-                f"app/assets/images/items/{item_name.lower().replace(' ', '_')}.png"
-            )
-
-            self.item_image.source = image_path
-
-            self.item_description.text = (
-                f"{item_name}\n\n"
-                "Item description goes here.\n"
-                "You can later load this from a JSON or database."
-            )
+        self.item_description.text = item["description"]
 
     # -----------------------------------
     # DEFAULT TAB

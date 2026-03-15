@@ -5,7 +5,7 @@ from app.core.sound_manager import sound_manager
 
 class PipBoyList(BoxLayout):
 
-    def __init__(self, items, **kwargs):
+    def __init__(self, items, on_select=None, **kwargs):
         super().__init__(**kwargs)
 
         self.orientation = "vertical"
@@ -14,8 +14,9 @@ class PipBoyList(BoxLayout):
         self.spacing = 4
 
         self.rows = []
+        self.on_select = on_select  # callback from screen
 
-        for i, text in enumerate(items):
+        for text in items:
 
             row = PipBoyListItem(text=text)
 
@@ -24,14 +25,20 @@ class PipBoyList(BoxLayout):
             self.rows.append(row)
             self.add_widget(row)
 
-        if self.rows:
-            self.select_row(self.rows[0])
+        if self.rows and self.on_select:
+            self.on_select(self.rows[0].text)
 
     def on_row_click(self, row, touch):
 
         if row.collide_point(*touch.pos):
+
             sound_manager.play_click()
+
             self.select_row(row)
+
+            # notify screen
+            if self.on_select:
+                self.on_select(row.text)
 
     def select_row(self, selected_row):
 

@@ -3,6 +3,9 @@ from kivy.uix.label import Label
 from kivy.graphics import Color, Rectangle
 from app.core.theme import theme
 
+from datetime import datetime
+from kivy.clock import Clock
+
 
 class PipBoyFooter(BoxLayout):
 
@@ -29,13 +32,20 @@ class PipBoyFooter(BoxLayout):
             text="LEVEL 32", color=theme.text, font_name=theme.font
         )
 
-        self.right_label = Label(
-            text="AP 80/80", color=theme.text, font_name=theme.font
-        )
+        self.right_label = Label(text="", color=theme.text, font_name=theme.font)
+        Clock.schedule_interval(self.update_clock, 0.60)
 
         self.add_widget(self.left_label)
         self.add_widget(self.center_label)
         self.add_widget(self.right_label)
+
+    def update_clock(self, dt):
+
+        now = datetime.now()
+
+        time_string = now.strftime("%d.%m.%Y  %H:%M")
+
+        self.right_label.text = time_string
 
     def update_rect(self, *args):
         self.bg.pos = self.pos

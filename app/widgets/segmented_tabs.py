@@ -37,4 +37,5 @@ class SegmentedTabs(BoxLayout):
             self.add_widget(btn)
 
     def on_tab_press(self, tab_name):
+        sound_manager.play_click()
         self.callback(tab_name)

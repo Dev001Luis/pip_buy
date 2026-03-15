@@ -1,26 +1,107 @@
 {
-  "languages": [
-    "Python",
-    "Php",
-    "JavaScript",
-    "MySQL"
-  ],
-  "frameworks": [
-    "Flask",
-    "FastAPI",
-    "Laravel"
-  ],
-  "softwares": [
-    "Git",
-    "Docker",
-    "Linux"
-  ],
   "items": [
-    "water 250 ml",
-    "water 500 ml",
-    "water 1000 ml",
-    "Food 300 Kcal",
-    "Gym 40 min",
-    "Walkedy 1h"
+    {
+      "name": "Water 250 ml",
+      "image": "water_250ml.png",
+      "description": "A standard glass of water to keep you hydrated."
+    },
+    {
+      "name": "Coffee Cup",
+      "image": "coffee_cup.png",
+      "description": "A warm cup of coffee for a morning energy boost."
+    },
+    {
+      "name": "Snack 300 Kcal",
+      "image": "snack_300kcal.png",
+      "description": "A quick bite to keep your energy levels up between meals."
+    },
+    {
+      "name": "Energy Drink 250 ml",
+      "image": "energy_drink_250ml.png",
+      "description": "A quick caffeine boost to get through a mid-day slump."
+    },
+    {
+      "name": "Apple",
+      "image": "apple.png",
+      "description": "A healthy fruit snack rich in fiber and vitamins."
+    },
+    {
+      "name": "Daily Vitamins",
+      "image": "vitamins.png",
+      "description": "Supplements to support overall health and wellbeing."
+    },
+    {
+      "name": "Protein Shake",
+      "image": "protein_shake.png",
+      "description": "Great for post-workout recovery or a quick breakfast."
+    },
+    {
+      "name": "Toothbrush",
+      "image": "toothbrush.png",
+      "description": "Essential tool for morning and evening dental hygiene."
+    },
+    {
+      "name": "Smartphone",
+      "image": "smartphone.png",
+      "description": "Your primary device for communication, alarms, and daily tasks."
+    },
+    {
+      "name": "House Keys",
+      "image": "keys.png",
+      "description": "Essential for leaving and entering your home safely."
+    },
+    {
+      "name": "Wallet",
+      "image": "wallet.png",
+      "description": "Holds your identification, transit cards, and payment methods."
+    },
+    {
+      "name": "Wireless Headphones",
+      "image": "headphones.png",
+      "description": "For listening to music, podcasts, or taking calls on the go."
+    },
+    {
+      "name": "Laptop",
+      "image": "laptop.png",
+      "description": "Essential workstation for a typical office or school routine."
+    },
+    {
+      "name": "Notebook",
+      "image": "notebook.png",
+      "description": "For jotting down to-do lists, meetings, and quick thoughts."
+    },
+    {
+      "name": "Lip Balm",
+      "image": "lip_balm.png",
+      "description": "Keeps lips protected and hydrated throughout the day."
+    }
+  ],
+  "languages": [
+    {
+      "name": "Python",
+      "image": "python.png",
+      "description": "Primary backend language used in most projects."
+    },
+    {
+      "name": "JavaScript",
+      "image": "javascript.png",
+      "description": "Used for frontend interactivity."
+    }
+  ],
+
+  "frameworks": [
+    {
+      "name": "Flask",
+      "image": "flask.png",
+      "description": "Lightweight Python web framework."
+    }
+  ],
+
+  "softwares": [
+    {
+      "name": "Git",
+      "image": "git.png",
+      "description": "Version control system."
+    }
   ]
 }
