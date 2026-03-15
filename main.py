@@ -10,9 +10,12 @@ from app.screens.data_screen import DataScreen
 from app.screens.map_screen import MapScreen
 from app.screens.radio_screen import RadioScreen
 from app.screens.boot_screen import BootScreen
-from app.screens.countdown_screen import CountdownScreen
 
-from app.widgets.navbar import NavBar
+# from app.screens.countdown_screen import CountdownScreen
+
+# from app.widgets.navbar import NavBar
+from app.widgets.pip_boy_top_navbar import PipBoyTopNav
+from app.widgets.pip_boy_footer import PipBoyFooter
 from app.widgets.ctr_overlay import CRTOverlay
 from app.widgets.screen_glow import ScreenGlow
 
@@ -47,15 +50,20 @@ class PipBoyApp(App):
         screen_manager.current = "boot"
 
         # NAVBAR
-        navbar = NavBar(screen_manager)
+        navbar = PipBoyTopNav(screen_manager)
         navbar.size_hint_y = None
         navbar.height = 60
         navbar.opacity = 0
         navbar.disabled = True
 
+        footer = PipBoyFooter()
+        footer.opacity = 0
+        footer.disabled = True
+
         # BUILD MAIN LAYOUT
         main_layout.add_widget(navbar)
         main_layout.add_widget(screen_manager)
+        main_layout.add_widget(footer)
 
         # ADD MAIN LAYOUT TO ROOT
         root.add_widget(main_layout)
@@ -67,8 +75,18 @@ class PipBoyApp(App):
         # CRT OVERLAY (on top of everything)
         overlay = CRTOverlay(size_hint=(1, 1))
         root.add_widget(overlay)
+        # screen_manager.bind(current=self.on_screen_change)
 
         return root
+
+    def on_screen_change(self, instance, screen_name):
+
+        if screen_name in ["stat", "inv"]:
+            self.footer.opacity = 1
+            self.footer.disabled = False
+        else:
+            self.footer.opacity = 0
+            self.footer.disabled = True
 
 
 if __name__ == "__main__":

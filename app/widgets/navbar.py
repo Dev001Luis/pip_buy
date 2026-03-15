@@ -1,6 +1,6 @@
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
-from app.core.theme import theme
+from app.widgets.pip_boy_nav_button import PipBoyNavButton
+from app.core.sound_manager import sound_manager
 
 
 class NavBar(BoxLayout):
@@ -9,15 +9,16 @@ class NavBar(BoxLayout):
         super().__init__(**kwargs)
 
         self.orientation = "horizontal"
-        self.size_hint_y = 0.12
+        self.size_hint_y = None
+        self.height = 60
 
-        self.screen_manager = screen_manager
+        self.padding = 10
+        self.spacing = 10
 
-        self.build_buttons()
+        self.sm = screen_manager
+        self.buttons = {}
 
-    def build_buttons(self):
-
-        buttons = [
+        tabs = [
             ("STAT", "stat"),
             ("INV", "inv"),
             ("DATA", "data"),
@@ -25,24 +26,25 @@ class NavBar(BoxLayout):
             ("RADIO", "radio"),
         ]
 
-        for text, screen_name in buttons:
+        for label, screen in tabs:
 
-            btn = Button(
-                text=text,
-                font_name=theme.font,
-                font_size=22,
-                background_normal="",
-                background_down="",
-                background_color=(0, 0, 0, 1),
-                color=theme.text,
-            )
+            btn = PipBoyNavButton(text=label)
 
-            btn.bind(
-                on_press=lambda instance, name=screen_name: self.switch_screen(name)
-            )
+            btn.bind(on_release=lambda inst, s=screen: self.switch_tab(s))
+
+            self.buttons[screen] = btn
 
             self.add_widget(btn)
 
-    def switch_screen(self, screen_name):
+        self.set_active("stat")
 
-        self.screen_manager.current = screen_name
+    def switch_tab(self, screen):
+
+        self.sm.current = screen
+        sound_manager.play_click()
+        self.set_active(screen)
+
+    def set_active(self, screen):
+
+        for name, btn in self.buttons.items():
+            btn.set_active(name == screen)

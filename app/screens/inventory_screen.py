@@ -1,15 +1,16 @@
 from kivy.uix.screenmanager import Screen
-from kivy.uix.scrollview import ScrollView
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.image import Image
+from kivy.uix.label import Label
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.button import Button
 
 from app.widgets.pipboy_screen import PipBoyScreen
 from app.widgets.segmented_tabs import SegmentedTabs
+from app.widgets.pip_boy_list import PipBoyList
 
 from app.core.theme import theme
 from app.core.inventory_manager import inventory_manager
-from app.core.sound_manager import sound_manager
 
 
 class InventoryScreen(Screen):
@@ -17,45 +18,90 @@ class InventoryScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Base Pip-Boy layout
         layout = PipBoyScreen(title="INV")
 
-        # Container for tabs + scrollable list
-        self.content_layout = BoxLayout(orientation="vertical", size_hint_y=1)
+        # MAIN VERTICAL LAYOUT
+        self.content_layout = BoxLayout(orientation="vertical")
 
-        # Segmented tabs at the top
+        # ------------------------
+        # TABS
+        # ------------------------
         tabs = SegmentedTabs(
-            tabs=[
-                "ITEMS",
-                "LANGUAGES",
-                "FRAMEWORKS",
-                "SOFTWARES",
-            ],
+            tabs=["ITEMS", "LANGUAGES", "FRAMEWORKS", "SOFTWARES"],
             callback=self.switch_tab,
         )
+
         tabs.size_hint_y = None
-        tabs.height = 50  # fixed height for tabs
+        tabs.height = 50
+
         self.content_layout.add_widget(tabs)
 
-        # Scrollable inventory list
-        self.display_layout = GridLayout(cols=1, spacing=5, size_hint_y=None)
-        self.display_layout.bind(minimum_height=self.display_layout.setter("height"))
+        # ------------------------
+        # MAIN TWO PANEL AREA
+        # ------------------------
+        self.main_area = BoxLayout(
+            orientation="horizontal", spacing=20, padding=(10, 10)
+        )
 
-        scroll = ScrollView(size_hint_y=1)
-        scroll.add_widget(self.display_layout)
-        self.content_layout.add_widget(scroll)
+        # LEFT PANEL (LIST)
+        self.left_panel = BoxLayout(orientation="vertical", size_hint_x=0.40)
 
-        # Selected item index
-        self.selected_index = 0
+        # ScrollView
+        self.scroll = ScrollView(do_scroll_x=False, do_scroll_y=True)
 
-        # Add content layout to PipBoyScreen content (footer stays anchored)
+        # List container
+        self.list_container = GridLayout(cols=1, spacing=4, size_hint_y=None)
+
+        self.list_container.bind(minimum_height=self.list_container.setter("height"))
+
+        self.scroll.add_widget(self.list_container)
+
+        self.left_panel.add_widget(self.scroll)
+        # left_panel = BoxLayout(orientation="vertical", size_hint_x=0.40)
+
+        # RIGHT PANEL (PREVIEW)
+        self.right_panel = BoxLayout(
+            orientation="vertical", size_hint_x=0.60, spacing=10
+        )
+
+        # ------------------------
+        # RIGHT PANEL CONTENT
+        # ------------------------
+
+        self.item_image = Image(
+            source="app/assets/images/items/placeholder.png",
+            size_hint_y=0.7,
+            # allow_stretch=True,
+        )
+
+        self.item_description = Label(
+            text="Select an item", font_name=theme.font, color=theme.text, valign="top"
+        )
+
+        self.item_description.bind(size=self.item_description.setter("text_size"))
+
+        self.right_panel.add_widget(self.item_image)
+        self.right_panel.add_widget(self.item_description)
+
+        # ------------------------
+        # ADD PANELS
+        # ------------------------
+
+        self.main_area.add_widget(self.left_panel)
+        self.main_area.add_widget(self.right_panel)
+
+        self.content_layout.add_widget(self.main_area)
+
         layout.content.add_widget(self.content_layout)
         self.add_widget(layout)
 
+    # -----------------------------------
+    # TAB SWITCH
+    # -----------------------------------
+
     def switch_tab(self, tab_name):
-        """Update the inventory list when a tab is pressed."""
-        self.display_layout.clear_widgets()
-        sound_manager.play_click()
+
+        self.list_container.clear_widgets()
 
         mapping = {
             "ITEMS": "items",
@@ -63,47 +109,49 @@ class InventoryScreen(Screen):
             "FRAMEWORKS": "frameworks",
             "SOFTWARES": "softwares",
         }
+
         category_key = mapping.get(tab_name)
+
         items = inventory_manager.get_category(category_key)
 
         if not items:
-            items = ["No items yet."]
+            items = ["No items yet"]
 
-        # Populate scrollable list with clickable buttons
-        for idx, item in enumerate(items):
-            btn = Button(
-                text=item,
-                font_name=theme.font,
-                font_size=22,
-                size_hint_y=None,
-                height=50,
-                background_normal="",
-                background_down="",
-                background_color=(0, 0, 0, 1),
-                color=theme.text,
+        inventory_list = PipBoyList(items, on_select=self.show_item)
+
+        self.list_container.add_widget(inventory_list)
+
+    # -----------------------------------
+    # ITEM PREVIEW
+    # -----------------------------------
+
+    def show_item(self, item_name):
+
+        # Placeholder logic (can move to DB later)
+
+        if item_name == "No items yet":
+
+            self.item_image.source = "app/assets/images/items/placeholder.png"
+
+            self.item_description.text = "No items available."
+
+        else:
+
+            image_path = (
+                f"app/assets/images/items/{item_name.lower().replace(' ', '_')}.png"
             )
-            # Bind touch/click to select item
-            btn.bind(on_release=lambda instance, i=idx: self.on_item_click(i))
-            self.display_layout.add_widget(btn)
 
-        # Highlight first item by default
-        if items and items != ["No items yet."]:
-            self.highlight_item(0)
+            self.item_image.source = image_path
 
-    def highlight_item(self, index):
-        """Add '>' marker to the selected item."""
-        children = self.display_layout.children
-        for i, btn in enumerate(reversed(children)):
-            if i == index:
-                btn.text = f"> {btn.text.strip('> ')}"
-            else:
-                btn.text = btn.text.strip("> ")
+            self.item_description.text = (
+                f"{item_name}\n\n"
+                "Item description goes here.\n"
+                "You can later load this from a JSON or database."
+            )
+
+    # -----------------------------------
+    # DEFAULT TAB
+    # -----------------------------------
 
     def on_enter(self):
         self.switch_tab("ITEMS")
-
-    def on_item_click(self, index):
-        """Update selection when an item is clicked."""
-        self.selected_index = index
-        self.highlight_item(index)
-        sound_manager.play_click()

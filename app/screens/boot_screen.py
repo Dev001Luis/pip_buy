@@ -62,9 +62,12 @@ class BootScreen(Screen):
 
     def finish_boot(self, dt):
         root = self.manager.parent
-        navbar = root.children[1]
+        navbar = root.children[2]
+        footer = root.children[0]
 
         navbar.opacity = 1
         navbar.disabled = False
+        footer.opacity = 1
+        footer.disabled = False
 
         self.manager.current = "stat"
