@@ -10,6 +10,7 @@ from app.screens.data_screen import DataScreen
 from app.screens.map_screen import MapScreen
 from app.screens.radio_screen import RadioScreen
 from app.screens.boot_screen import BootScreen
+from app.screens.radio_screen import RadioScreen
 
 # from app.screens.countdown_screen import CountdownScreen
 
