@@ -158,5 +158,23 @@ class RadioManager:
 
         self.play_current()
 
+    def get_now_playing(self):
+
+        if not self.current_station:
+            return None, None
+
+        station_name = self.current_station["name"]
+
+        tracks = self.current_station["tracks"]
+
+        if not tracks:
+            return station_name, None
+
+        track_path = tracks[self.current_track_index]
+
+        song_name = track_path.stem.replace("_", " ").title()
+
+        return station_name, song_name
+
 
 radio_manager = RadioManager()
