@@ -23,6 +23,9 @@ class RadioManager:
         self.static_sound = SoundLoader.load(STATIC_SOUND)
         self.radio_on = False
 
+        # fix 16/03/2026: flag to stop loop
+        self.ignore_stop_event = False
+
         self.load_stations()
 
     # ------------------------
@@ -83,6 +86,7 @@ class RadioManager:
     def _play_track(self, track_path):
 
         if self.current_sound:
+            self.ignore_stop_event = True
             self.current_sound.stop()
 
         self.current_sound = SoundLoader.load(str(track_path))
@@ -120,6 +124,10 @@ class RadioManager:
     # ------------------------
 
     def _on_track_end(self, *args):
+
+        if self.ignore_stop_event:
+            self.ignore_stop_event = False
+            return
 
         if not self.radio_on:
             return

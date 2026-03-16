@@ -6,6 +6,8 @@ from app.core.theme import theme
 from datetime import datetime
 from kivy.clock import Clock
 
+from app.widgets.radio_controls import RadioControls
+
 
 class PipBoyFooter(BoxLayout):
 
@@ -35,7 +37,16 @@ class PipBoyFooter(BoxLayout):
         self.right_label = Label(text="", color=theme.text, font_name=theme.font)
         Clock.schedule_interval(self.update_clock, 0.60)
 
+        self.controls = RadioControls(size_hint_y=None, height=40)
+        controls_container = BoxLayout(
+            size_hint_x=0.25,
+            size_hint_y=1,
+            padding=(0, -15),
+        )
+        controls_container.add_widget(self.controls)
+
         self.add_widget(self.left_label)
+        self.add_widget(controls_container)
         self.add_widget(self.center_label)
         self.add_widget(self.right_label)
 
