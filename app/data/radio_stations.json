@@ -1,0 +1,12 @@
+{
+  "stations": [
+    {
+      "name": "Fallout Radio",
+      "folder": "fallout"
+    },
+    {
+      "name": "Personal Radio",
+      "folder": "other"
+    }
+  ]
+}
