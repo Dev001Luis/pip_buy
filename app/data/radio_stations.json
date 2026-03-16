@@ -7,6 +7,14 @@
     {
       "name": "Personal Radio",
       "folder": "other"
+    },
+    {
+      "name": "Gym Phonk Radio",
+      "folder": "gym"
+    },
+    {
+      "name": "Synthwave Castlevania",
+      "folder": "synthwave"
     }
   ]
 }
