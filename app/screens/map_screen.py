@@ -4,9 +4,11 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-
 from kivy_garden.mapview import MapView
+from kivy.utils import platform
+
 import geocoder
+from plyer import gps
 
 from app.widgets.pipboy_screen import PipBoyScreen
 from app.widgets.player_marker import PlayerMarker
@@ -44,14 +46,18 @@ class MapScreen(Screen):
 
         clear_button = Button(text="CLEAR MARKERS", size_hint_y=None, height=40)
 
+        center_on_map = Button(text="CENTER ON MAP", size_hint_y=None, height=40)
+
         search_button.bind(on_release=self.search_location)
         clear_button.bind(on_release=self.clear_markers)
+        center_on_map.bind(on_release=self.center_on_player)
 
         # Add widgets to left panel
         left_panel.add_widget(title)
         left_panel.add_widget(self.address_input)
         left_panel.add_widget(search_button)
         left_panel.add_widget(clear_button)
+        left_panel.add_widget(center_on_map)
 
         # -----------------------
         # RIGHT PANEL (map)
@@ -85,18 +91,21 @@ class MapScreen(Screen):
         # -----------------------
         # PLAYER AND QUEST MARKERS
         # -----------------------
+        # gps.configure(on_location=self.update_position)
+        # gps.start()
+
         self.player = PlayerMarker(lat=53.238701, lon=-0.544168)
         self.map.add_marker(self.player)
 
         # Store quest markers here
         self.quest_markers = []
 
-        # Example quest marker
-        quest = QuestMarker(lat=53.238706, lon=-0.544167)
-        self.map.add_marker(quest)
+        # # Example quest marker
+        # quest = QuestMarker(lat=53.238706, lon=-0.544167)
+        # self.map.add_marker(quest)
 
-        # self.detect_location()  # Uncomment for live location
-        self.quest_markers.append(quest)
+        # self.detect_ip_location()  # Uncomment for live location
+        # self.quest_markers.append(quest)
 
     # -----------------------
     # SEARCH LOCATION
@@ -137,13 +146,81 @@ class MapScreen(Screen):
     # -----------------------
     # DETECT LOCATION
     # -----------------------
-    def detect_location(self):
-        g = geocoder.ip("me")
-        if g.ok:
-            lat, lon = g.latlng
-            self.map.center_on(lat, lon)
-            self.player.lat = lat
-            self.player.lon = lon
+    def detect_ip_location(self):
+
+        try:
+
+            g = geocoder.ip("me")
+
+            if g.ok:
+
+                lat, lon = g.latlng
+
+                self.player.lat = lat
+                self.player.lon = lon
+
+                self.map.center_on(lat, lon)
+
+                print(f"[MAP] IP location: {lat}, {lon}")
+
+            else:
+
+                print("[MAP] Could not detect IP location")
+
+        except Exception as e:
+
+            print(f"[MAP] IP geolocation error: {e}")
+
+    def update_gps_position(self, **kwargs):
+
+        lat = float(kwargs["lat"])
+        lon = float(kwargs["lon"])
+
+        self.player.lat = lat
+        self.player.lon = lon
+
+    def center_on_player(self, instance):
+
+        if not hasattr(self, "player"):
+            return
+
+        lat = self.player.lat
+        lon = self.player.lon
+
+        self.map.center_on(lat, lon)
+
+    def on_enter(self):
+        self.start_location_tracking()
+
+    def start_location_tracking(self):
+
+        if platform in ("android", "ios"):
+
+            print("[MAP] Starting GPS tracking")
+
+            try:
+                gps.configure(on_location=self.update_gps_position)
+                gps.start(minTime=1000, minDistance=1)
+
+            except NotImplementedError:
+                print("[MAP] GPS not implemented on this device")
+
+        else:
+
+            print("[MAP] Using IP geolocation")
+
+            self.detect_ip_location()
+
+    def on_leave(self):
+
+        if platform in ("android", "ios"):
+
+            try:
+                gps.stop()
+                print("[MAP] GPS stopped")
+
+            except Exception:
+                pass
 
 
 # working

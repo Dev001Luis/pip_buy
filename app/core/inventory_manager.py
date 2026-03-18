@@ -1,39 +1,55 @@
 import json
+import os
+from kivy.app import App
 from pathlib import Path
 
-DATA_FILE = Path("app/data/dev_inventory.json")
+
+import os
+from kivy.app import App
+from kivy.utils import platform
 
 
 class InventoryManager:
-
     def __init__(self):
+        # 1. Get the app root regardless of OS
+        if App.get_running_app():
+            base_path = App.get_running_app().directory
+        else:
+            # Fallback for running script directly without App instance
+            base_path = os.path.dirname(os.path.abspath(__file__))
 
-        self.data = {
-            "items": [],
-            "languages": [],
-            "frameworks": [],
-            "softwares": [],
-        }
+        # 2. Define the Read-Only Data (Package Data)
+        # This works on Windows (.\app\data) and Android (/data/user/0/...)
+        self.default_data_file = os.path.join(
+            base_path, "app", "data", "dev_inventory.json"
+        )
 
-        self.load_data()
-
-    # ------------------------
-    # FILE MANAGEMENT
-    # ------------------------
+        # 3. Define the Writable Data (Saves)
+        if platform == "android":
+            self.save_file = os.path.join(
+                App.get_running_app().user_data_dir, "inventory_save.json"
+            )
+        else:
+            # On PC, save in the same folder as the script for easy debugging
+            self.save_file = os.path.join(
+                base_path, "app", "data", "inventory_save.json"
+            )
 
     def load_data(self):
-
-        if DATA_FILE.exists():
-
-            with open(DATA_FILE, "r", encoding="utf-8") as f:
+        # Try to load from the "Save File" first (where changes live)
+        if os.path.exists(self.save_file):
+            with open(self.save_file, "r", encoding="utf-8") as f:
                 self.data = json.load(f)
-
+        # Otherwise, load the default JSON packaged with the app
+        elif os.path.exists(self.default_data_file):
+            with open(self.default_data_file, "r", encoding="utf-8") as f:
+                self.data = json.load(f)
         else:
             self.save_data()
 
     def save_data(self):
-
-        with open(DATA_FILE, "w", encoding="utf-8") as f:
+        # Always save to the WRITABLE user_data_dir
+        with open(self.save_file, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=4)
 
     # ------------------------

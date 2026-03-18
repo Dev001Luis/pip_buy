@@ -6,46 +6,38 @@ from kivy.core.audio import SoundLoader
 from kivy.clock import Clock
 
 
-DATA_FILE = Path("app/data/radio_stations.json")
-MUSIC_PATH = Path("app/assets/sounds/music")
-STATIC_SOUND = "app/assets/sounds/radio_static.mp3"
+import os
+from kivy.app import App
 
 
 class RadioManager:
-
     def __init__(self):
+        # Dynamically find the app directory
+        base = App.get_running_app().directory
+
+        self.data_file = os.path.join(base, "app", "data", "radio_stations.json")
+        self.music_path = Path(os.path.join(base, "app", "assets", "sounds", "music"))
+        self.static_path = os.path.join(
+            base, "app", "assets", "sounds", "radio_static.mp3"
+        )
 
         self.stations = []
-        self.current_station = None
-        self.current_track_index = 0
-        self.current_sound = None
-
-        self.static_sound = SoundLoader.load(STATIC_SOUND)
-        self.radio_on = False
-
-        # fix 16/03/2026: flag to stop loop
-        self.ignore_stop_event = False
-
+        # ... rest of init ...
+        self.static_sound = SoundLoader.load(self.static_path)
         self.load_stations()
 
-    # ------------------------
-
     def load_stations(self):
-
-        if not DATA_FILE.exists():
+        if not os.path.exists(self.data_file):
             return
 
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
+        with open(self.data_file, "r", encoding="utf-8") as f:
             data = json.load(f)
 
         for station in data["stations"]:
-
-            folder = MUSIC_PATH / station["folder"]
-
+            folder = self.music_path / station["folder"]
+            # Note: Android glob is case sensitive, ensure extensions are .ogg
             tracks = list(folder.glob("*.ogg"))
-
             random.shuffle(tracks)
-
             self.stations.append({"name": station["name"], "tracks": tracks})
 
     # ------------------------
