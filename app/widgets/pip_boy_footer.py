@@ -15,8 +15,8 @@ class PipBoyFooter(BoxLayout):
         super().__init__(**kwargs)
 
         self.size_hint_y = None
-        self.height = 40
-        self.padding = 10
+        self.height = 60
+        self.padding = 15
         self.spacing = 30
         self.width = 0.70
 

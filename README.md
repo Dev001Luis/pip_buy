@@ -359,7 +359,7 @@ The current milestone focuses on building the **UI framework and screen navigati
 Possible extensions include:
 
 - real device integration (battery level, GPS, etc.)
-- wearable integration
+- AI
 - real-time data widgets
 - expanded UI animations
 - customizable Pip-Boy themes
@@ -376,6 +376,7 @@ All rights to the original Pip-Boy design belong to Fallout Brand.
 
 # Author
 
+LuisDev001
 Software developer exploring:
 
 - Python

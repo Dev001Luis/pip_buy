@@ -12,21 +12,48 @@ from kivy.app import App
 
 class RadioManager:
     def __init__(self):
-        # Dynamically find the app directory
-        base = App.get_running_app().directory
+        # 1. Initialize variables as None or empty
+        self.base = None
+        self.data_file = None
+        self.music_path = None
+        self.static_path = None
+        self.static_sound = None
+        self.stations = []
+        self.radio_on = False
+        self.current_station = None
+        self.current_track_index = 0
+        self.current_sound = None
+        self.ignore_stop_event = False
 
-        self.data_file = os.path.join(base, "app", "data", "radio_stations.json")
-        self.music_path = Path(os.path.join(base, "app", "assets", "sounds", "music"))
+        # We don't call load_stations() here anymore!
+        # We wait until the App is actually running.
+
+    def _setup_paths(self):
+        """Internal helper to set up paths once the App is ready."""
+        if self.base is not None:
+            return
+
+        app = App.get_running_app()
+        if app:
+            self.base = app.directory
+        else:
+            # Fallback for PC development
+            self.base = os.path.dirname(os.path.abspath(__file__))
+
+        # Set up variables
+        self.data_file = os.path.join(self.base, "app", "data", "radio_stations.json")
+        self.music_path = Path(
+            os.path.join(self.base, "app", "assets", "sounds", "music")
+        )
         self.static_path = os.path.join(
-            base, "app", "assets", "sounds", "radio_static.mp3"
+            self.base, "app", "assets", "sounds", "radio_static.mp3"
         )
 
-        self.stations = []
-        # ... rest of init ...
+        # Load the sound and the JSON data
         self.static_sound = SoundLoader.load(self.static_path)
-        self.load_stations()
+        self._load_stations_internal()
 
-    def load_stations(self):
+    def _load_stations_internal(self):
         if not os.path.exists(self.data_file):
             return
 
@@ -35,14 +62,12 @@ class RadioManager:
 
         for station in data["stations"]:
             folder = self.music_path / station["folder"]
-            # Note: Android glob is case sensitive, ensure extensions are .ogg
             tracks = list(folder.glob("*.ogg"))
             random.shuffle(tracks)
             self.stations.append({"name": station["name"], "tracks": tracks})
 
-    # ------------------------
-
     def play_station(self, index):
+        self._setup_paths()
 
         self.radio_on = True
 
@@ -159,6 +184,7 @@ class RadioManager:
         self.play_current()
 
     def get_now_playing(self):
+        radio_manager._setup_paths()
 
         if not self.current_station:
             return None, None

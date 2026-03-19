@@ -11,43 +11,44 @@ from kivy.utils import platform
 
 class InventoryManager:
     def __init__(self):
-        # 1. Get the app root regardless of OS
-        if App.get_running_app():
-            base_path = App.get_running_app().directory
+        self.base = None
+        self.data = {}  # Initialize with an empty dictionary!
+        self.data_file = None
+
+    def _setup_paths(self):
+        """Lazy load the paths and the JSON data."""
+        if self.base is not None:
+            return  # Already loaded
+
+        app = App.get_running_app()
+        if app:
+            self.base = app.directory
         else:
-            # Fallback for running script directly without App instance
-            base_path = os.path.dirname(os.path.abspath(__file__))
+            self.base = os.path.dirname(os.path.abspath(__file__))
 
-        # 2. Define the Read-Only Data (Package Data)
-        # This works on Windows (.\app\data) and Android (/data/user/0/...)
-        self.default_data_file = os.path.join(
-            base_path, "app", "data", "dev_inventory.json"
-        )
+        self.data_file = os.path.join(self.base, "app", "data", "dev_inventory.json")
+        print(f"DEBUG: Looking for Inventory JSON at: {self.data_file}")
+        print(f"DEBUG: Does it exist? {os.path.exists(self.data_file)}")
+        self._load_data_internal()
 
-        # 3. Define the Writable Data (Saves)
-        if platform == "android":
-            self.save_file = os.path.join(
-                App.get_running_app().user_data_dir, "inventory_save.json"
-            )
-        else:
-            # On PC, save in the same folder as the script for easy debugging
-            self.save_file = os.path.join(
-                base_path, "app", "data", "inventory_save.json"
-            )
-
-    def load_data(self):
-        # Try to load from the "Save File" first (where changes live)
-        if os.path.exists(self.save_file):
-            with open(self.save_file, "r", encoding="utf-8") as f:
-                self.data = json.load(f)
-        # Otherwise, load the default JSON packaged with the app
-        elif os.path.exists(self.default_data_file):
-            with open(self.default_data_file, "r", encoding="utf-8") as f:
+    def _load_data_internal(self):
+        """Actually read the JSON."""
+        if os.path.exists(self.data_file):
+            with open(self.data_file, "r", encoding="utf-8") as f:
                 self.data = json.load(f)
         else:
-            self.save_data()
+            self.data = {}
+
+    def get_item_names(self, category):
+        # 1. ALWAYS ensure setup is run before accessing self.data
+        self._setup_paths()
+
+        # 2. Now self.data is guaranteed to exist
+        return [item["name"] for item in self.data.get(category, [])]
 
     def save_data(self):
+        self._setup_paths()
+
         # Always save to the WRITABLE user_data_dir
         with open(self.save_file, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=4)
@@ -57,10 +58,12 @@ class InventoryManager:
     # ------------------------
 
     def get_category(self, category):
+        self._setup_paths()
 
         return self.data.get(category, [])
 
     def get_item(self, category, item_name):
+        self._setup_paths()
 
         for item in self.data.get(category, []):
 
@@ -70,6 +73,7 @@ class InventoryManager:
         return None
 
     def get_item_names(self, category):
+        self._setup_paths()
 
         return [item["name"] for item in self.data.get(category, [])]
 
@@ -81,6 +85,7 @@ class InventoryManager:
     # ------------------------
 
     def add_item(self, category, name, image, description):
+        self._setup_paths()
 
         if category not in self.data:
             return
@@ -103,6 +108,7 @@ class InventoryManager:
     # ------------------------
 
     def remove_item(self, category, name):
+        self._setup_paths()
 
         if category not in self.data:
             return
@@ -118,6 +124,7 @@ class InventoryManager:
     # ------------------------
 
     def update_item(self, category, name, new_data):
+        self._setup_paths()
 
         for item in self.data.get(category, []):
 

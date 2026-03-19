@@ -58,6 +58,7 @@ class RadioScreen(Screen):
         self.add_widget(layout)
 
     def on_enter(self):
+        radio_manager._setup_paths()
         self.build_station_list()
 
     def build_station_list(self):
@@ -96,7 +97,7 @@ class RadioScreen(Screen):
                 break
 
     def update_now_playing(self, dt):
-
+        radio_manager._setup_paths()
         station, song = radio_manager.get_now_playing()
 
         if not station:
