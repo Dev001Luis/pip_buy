@@ -362,7 +362,7 @@ Possible extensions include:
 - AI
 - real-time data widgets
 - expanded UI animations
-- customizable Pip-Boy themes
+- customizable Pip-Boy themes (we could give like in the real Pip-Boy possibility to modifcy HUD layout by changing in different colours)
 
 ---
 
